@@ -74,6 +74,11 @@ class MetadataSession(WorldcatSession):
         base_url = self._url_search_base()
         return f"{base_url}/brief-bibs"
 
+    def _url_custom_barcode(self) -> str:
+        base_url = self._url_search_base()
+        base_url = "https://americas.discovery.api.oclc.org/worldcat/search/v2"
+        return f"{base_url}/bibs?q=bq"
+
     def _url_brief_bib_oclc_number(self, oclcNumber: str) -> str:
         base_url = self._url_search_base()
         return f"{base_url}/brief-bibs/{oclcNumber}"
@@ -874,6 +879,23 @@ class MetadataSession(WorldcatSession):
         query = Query(self, prepared_request, timeout=self.timeout)
 
         return query.response
+    
+    def search_custom_barcode(self,barcode):
+        url = self._url_custom_barcode()
+        header = {"Accept": "application/json"}
+
+
+        # prep request
+        req = Request("GET", url + ":" + barcode, headers=header, hooks=None)
+        prepared_request = self.prepare_request(req)
+
+        print(prepared_request.url)
+
+        # send request
+        query = Query(self, prepared_request, timeout=self.timeout)
+
+        return query.response
+
 
     def search_current_control_numbers(
         self,
